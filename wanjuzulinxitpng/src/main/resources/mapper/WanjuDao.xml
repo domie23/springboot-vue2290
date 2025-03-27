@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.WanjuDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.wanju_uuid_number as wanjuUuidNumber
+        ,a.wanju_name as wanjuName
+        ,a.wanju_photo as wanjuPhoto
+        ,a.wanju_types as wanjuTypes
+        ,a.wanju_kucun_number as wanjuKucunNumber
+        ,a.wanju_new_money as wanjuNewMoney
+        ,a.wanju_clicknum as wanjuClicknum
+        ,a.wanju_content as wanjuContent
+        ,a.shangxia_types as shangxiaTypes
+        ,a.wanju_delete as wanjuDelete
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.WanjuView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM wanju  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.wanjuUuidNumber != '' and params.wanjuUuidNumber != null and params.wanjuUuidNumber != 'null' ">
+                and a.wanju_uuid_number like CONCAT('%',#{params.wanjuUuidNumber},'%')
+            </if>
+            <if test=" params.wanjuName != '' and params.wanjuName != null and params.wanjuName != 'null' ">
+                and a.wanju_name like CONCAT('%',#{params.wanjuName},'%')
+            </if>
+            <if test="params.wanjuTypes != null and params.wanjuTypes != ''">
+                and a.wanju_types = #{params.wanjuTypes}
+            </if>
+            <if test="params.wanjuKucunNumberStart != null and params.wanjuKucunNumberStart != ''">
+                <![CDATA[  and a.wanju_kucun_number >= #{params.wanjuKucunNumberStart}   ]]>
+            </if>
+            <if test="params.wanjuKucunNumberEnd != null and params.wanjuKucunNumberEnd != ''">
+                <![CDATA[  and a.wanju_kucun_number <= #{params.wanjuKucunNumberEnd}   ]]>
+            </if>
+             <if test="params.wanjuKucunNumber != null and params.wanjuKucunNumber != ''">
+                and a.wanju_kucun_number = #{params.wanjuKucunNumber}
+             </if>
+            <if test="params.wanjuNewMoneyStart != null ">
+                <![CDATA[  and a.wanju_new_money >= #{params.wanjuNewMoneyStart}   ]]>
+            </if>
+            <if test="params.wanjuNewMoneyEnd != null ">
+                <![CDATA[  and a.wanju_new_money <= #{params.wanjuNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.wanjuClicknumStart != null and params.wanjuClicknumStart != ''">
+                <![CDATA[  and a.wanju_clicknum >= #{params.wanjuClicknumStart}   ]]>
+            </if>
+            <if test="params.wanjuClicknumEnd != null and params.wanjuClicknumEnd != ''">
+                <![CDATA[  and a.wanju_clicknum <= #{params.wanjuClicknumEnd}   ]]>
+            </if>
+             <if test="params.wanjuClicknum != null and params.wanjuClicknum != ''">
+                and a.wanju_clicknum = #{params.wanjuClicknum}
+             </if>
+            <if test=" params.wanjuContent != '' and params.wanjuContent != null and params.wanjuContent != 'null' ">
+                and a.wanju_content like CONCAT('%',#{params.wanjuContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null and params.shangxiaTypes != ''">
+                and a.shangxia_types = #{params.shangxiaTypes}
+            </if>
+            <if test="params.wanjuDeleteStart != null and params.wanjuDeleteStart != ''">
+                <![CDATA[  and a.wanju_delete >= #{params.wanjuDeleteStart}   ]]>
+            </if>
+            <if test="params.wanjuDeleteEnd != null and params.wanjuDeleteEnd != ''">
+                <![CDATA[  and a.wanju_delete <= #{params.wanjuDeleteEnd}   ]]>
+            </if>
+             <if test="params.wanjuDelete != null and params.wanjuDelete != ''">
+                and a.wanju_delete = #{params.wanjuDelete}
+             </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

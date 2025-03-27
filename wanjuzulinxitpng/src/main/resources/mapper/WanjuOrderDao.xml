@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.WanjuOrderDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.wanju_order_uuid_number as wanjuOrderUuidNumber
+        ,a.wanju_id as wanjuId
+        ,a.yonghu_id as yonghuId
+        ,a.buy_number as buyNumber
+        ,a.wanju_order_number as wanjuOrderNumber
+        ,a.wanju_order_time as wanjuOrderTime
+        ,a.wanju_order_true_price as wanjuOrderTruePrice
+        ,a.wanju_order_types as wanjuOrderTypes
+        ,a.wanju_order_payment_types as wanjuOrderPaymentTypes
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.WanjuOrderView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,wanju.wanju_uuid_number as wanjuUuidNumber
+        ,wanju.wanju_name as wanjuName
+        ,wanju.wanju_photo as wanjuPhoto
+        ,wanju.wanju_types as wanjuTypes
+        ,wanju.wanju_kucun_number as wanjuKucunNumber
+        ,wanju.wanju_new_money as wanjuNewMoney
+        ,wanju.wanju_clicknum as wanjuClicknum
+        ,wanju.wanju_content as wanjuContent
+        ,wanju.shangxia_types as shangxiaTypes
+        ,wanju.wanju_delete as wanjuDelete
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_email as yonghuEmail
+        ,yonghu.new_money as newMoney
+
+        FROM wanju_order  a
+        left JOIN wanju wanju ON a.wanju_id = wanju.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.wanjuOrderUuidNumber != '' and params.wanjuOrderUuidNumber != null and params.wanjuOrderUuidNumber != 'null' ">
+                and a.wanju_order_uuid_number like CONCAT('%',#{params.wanjuOrderUuidNumber},'%')
+            </if>
+            <if test="params.wanjuId != null and params.wanjuId != ''">
+                and (
+                    a.wanju_id = #{params.wanjuId}
+                )
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test="params.buyNumberStart != null and params.buyNumberStart != ''">
+                <![CDATA[  and a.buy_number >= #{params.buyNumberStart}   ]]>
+            </if>
+            <if test="params.buyNumberEnd != null and params.buyNumberEnd != ''">
+                <![CDATA[  and a.buy_number <= #{params.buyNumberEnd}   ]]>
+            </if>
+             <if test="params.buyNumber != null and params.buyNumber != ''">
+                and a.buy_number = #{params.buyNumber}
+             </if>
+            <if test="params.wanjuOrderNumberStart != null and params.wanjuOrderNumberStart != ''">
+                <![CDATA[  and a.wanju_order_number >= #{params.wanjuOrderNumberStart}   ]]>
+            </if>
+            <if test="params.wanjuOrderNumberEnd != null and params.wanjuOrderNumberEnd != ''">
+                <![CDATA[  and a.wanju_order_number <= #{params.wanjuOrderNumberEnd}   ]]>
+            </if>
+             <if test="params.wanjuOrderNumber != null and params.wanjuOrderNumber != ''">
+                and a.wanju_order_number = #{params.wanjuOrderNumber}
+             </if>
+            <if test="params.wanjuOrderTruePriceStart != null ">
+                <![CDATA[  and a.wanju_order_true_price >= #{params.wanjuOrderTruePriceStart}   ]]>
+            </if>
+            <if test="params.wanjuOrderTruePriceEnd != null ">
+                <![CDATA[  and a.wanju_order_true_price <= #{params.wanjuOrderTruePriceEnd}   ]]>
+            </if>
+            <if test="params.wanjuOrderTypes != null and params.wanjuOrderTypes != ''">
+                and a.wanju_order_types = #{params.wanjuOrderTypes}
+            </if>
+            <if test="params.wanjuOrderPaymentTypes != null and params.wanjuOrderPaymentTypes != ''">
+                and a.wanju_order_payment_types = #{params.wanjuOrderPaymentTypes}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+                <!-- 判断玩具的id不为空 -->
+            <if test=" params.wanjuIdNotNull != '' and params.wanjuIdNotNull != null and params.wanjuIdNotNull != 'null' ">
+                and a.wanju_id IS NOT NULL
+            </if>
+            <if test=" params.wanjuUuidNumber != '' and params.wanjuUuidNumber != null and params.wanjuUuidNumber != 'null' ">
+                and wanju.wanju_uuid_number like CONCAT('%',#{params.wanjuUuidNumber},'%')
+            </if>
+            <if test=" params.wanjuName != '' and params.wanjuName != null and params.wanjuName != 'null' ">
+                and wanju.wanju_name like CONCAT('%',#{params.wanjuName},'%')
+            </if>
+            <if test="params.wanjuTypes != null  and params.wanjuTypes != ''">
+                and wanju.wanju_types = #{params.wanjuTypes}
+            </if>
+
+            <if test="params.wanjuKucunNumberStart != null  and params.wanjuKucunNumberStart != '' ">
+                <![CDATA[  and wanju.wanju_kucun_number >= #{params.wanjuKucunNumberStart}   ]]>
+            </if>
+            <if test="params.wanjuKucunNumberEnd != null  and params.wanjuKucunNumberEnd != '' ">
+                <![CDATA[  and wanju.wanju_kucun_number <= #{params.wanjuKucunNumberEnd}   ]]>
+            </if>
+            <if test="params.wanjuKucunNumber != null  and params.wanjuKucunNumber != '' ">
+                and wanju.wanju_kucun_number = #{params.wanjuKucunNumber}
+            </if>
+            <if test="params.wanjuNewMoneyStart != null ">
+                <![CDATA[  and wanju.wanju_new_money >= #{params.wanjuNewMoneyStart}   ]]>
+            </if>
+            <if test="params.wanjuNewMoneyEnd != null ">
+                <![CDATA[  and wanju.wanju_new_money <= #{params.wanjuNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.wanjuClicknumStart != null  and params.wanjuClicknumStart != '' ">
+                <![CDATA[  and wanju.wanju_clicknum >= #{params.wanjuClicknumStart}   ]]>
+            </if>
+            <if test="params.wanjuClicknumEnd != null  and params.wanjuClicknumEnd != '' ">
+                <![CDATA[  and wanju.wanju_clicknum <= #{params.wanjuClicknumEnd}   ]]>
+            </if>
+            <if test="params.wanjuClicknum != null  and params.wanjuClicknum != '' ">
+                and wanju.wanju_clicknum = #{params.wanjuClicknum}
+            </if>
+            <if test=" params.wanjuContent != '' and params.wanjuContent != null and params.wanjuContent != 'null' ">
+                and wanju.wanju_content like CONCAT('%',#{params.wanjuContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null  and params.shangxiaTypes != ''">
+                and wanju.shangxia_types = #{params.shangxiaTypes}
+            </if>
+
+            <if test="params.wanjuDeleteStart != null  and params.wanjuDeleteStart != '' ">
+                <![CDATA[  and wanju.wanju_delete >= #{params.wanjuDeleteStart}   ]]>
+            </if>
+            <if test="params.wanjuDeleteEnd != null  and params.wanjuDeleteEnd != '' ">
+                <![CDATA[  and wanju.wanju_delete <= #{params.wanjuDeleteEnd}   ]]>
+            </if>
+            <if test="params.wanjuDelete != null  and params.wanjuDelete != '' ">
+                and wanju.wanju_delete = #{params.wanjuDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(wanju.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(wanju.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+            <if test="params.newMoneyStart != null ">
+                <![CDATA[  and yonghu.new_money >= #{params.newMoneyStart}   ]]>
+            </if>
+            <if test="params.newMoneyEnd != null ">
+                <![CDATA[  and yonghu.new_money <= #{params.newMoneyEnd}   ]]>
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
